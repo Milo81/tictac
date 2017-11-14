@@ -11,18 +11,16 @@ import java.util.Scanner;
  */
 public class HumanPlayer extends AbstractPlayer {
 
-    public HumanPlayer(Board board) {
-        super(board);
+    public HumanPlayer(Board board, State theSide) {
+        super(board, theSide);
     }
 
     @Override
     public int[] move() {
         // we will ask player for move from stdin
-
-        Scanner s = new Scanner(System.in);
-
         do {
-            if (mySeed == State.CROSS) {
+            Scanner s = new Scanner(System.in);
+            if (mySide == State.CROSS) {
                 System.out.print("Player X: (row[1-3] column[1-3]): ");
             } else {
                 System.out.print("Player O: (row[1-3] column[1-3]): ");

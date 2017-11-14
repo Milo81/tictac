@@ -1,12 +1,12 @@
-import com.miloslavfritz.tictac.Board
-import com.miloslavfritz.tictac.State
+package com.miloslavfritz.tictac
+
 import spock.lang.See
 import spock.lang.Specification
 
 /**
  * Specification of board states.
  */
-class BoardStateSpec extends Specification {
+class BoardSpec extends Specification {
 
     @See("TDD Scenario 1 - Bame board creation phase")
     def "initial game board creation"() {

@@ -6,7 +6,8 @@ import java.util.Objects;
  * Represents the indivividual cell in the board.
  */
 public class Cell {
-    public State content; // content of this cell of type Seed.
+    // current state of this cell (X, O or empty)
+    public State content;
 
     public Cell() {
         content = State.EMPTY;

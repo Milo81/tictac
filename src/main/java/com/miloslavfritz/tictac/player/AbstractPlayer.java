@@ -6,10 +6,9 @@ import com.miloslavfritz.tictac.State;
 
 /**
  * Abstract superclass for all players.
- * To construct an player:
+ * To construct a player:
  * <ul>
  *     <li>Construct an instance (of its subclass) with the game Board</li>
- *     <li>Call setSeed() to set the computer's seed</li>
  *     <li>Call move() which returns the next move in an int[2] array of {row, col}.</li>
  * </ul>
  *
@@ -22,18 +21,20 @@ public abstract class AbstractPlayer implements Player {
    protected int COLS = 3;  // number of columns
  
    protected Cell[][] cells; // the board's ROWS-by-COLS array of Cells
-   protected State mySeed;    // computer's seed
-   protected State oppSeed;   // opponent's seed
- 
-   /** Constructor with reference to game board */
-   AbstractPlayer(Board board) {
+   protected State mySide;
+   protected State oponentSide;
+
+   /**
+    * Constructor for abstract player.
+    *
+    * @param board   board to use for this player.
+    * @param theSide side (X or O) this player will play
+    */
+   AbstractPlayer(Board board, State theSide) {
       cells = board.cells;
+      this.mySide = theSide;
+      oponentSide = (mySide == State.CROSS) ? State.NOUGHT : State.CROSS;
    }
- 
-   /** Set/change the seed used by computer and opponent */
-   public void setSeed(State seed) {
-      this.mySeed = seed;
-      oppSeed = (mySeed == State.CROSS) ? State.NOUGHT : State.CROSS;
-   }
+
 
 }

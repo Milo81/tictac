@@ -13,13 +13,13 @@ public class AIPlayerMinimax extends AbstractPlayer {
     /**
      * Constructor with the given game board
      */
-    public AIPlayerMinimax(Board board) {
-        super(board);
+    public AIPlayerMinimax(Board board, State theSide) {
+        super(board, theSide);
     }
 
     @Override
     public int[] move() {
-        int[] result = minimax(2, mySeed, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        int[] result = minimax(2, mySide, Integer.MIN_VALUE, Integer.MAX_VALUE);
         // depth, max-turn, alpha, beta
         return new int[]{result[1], result[2]};   // row, col
     }
@@ -32,7 +32,7 @@ public class AIPlayerMinimax extends AbstractPlayer {
         // Generate possible next moves in a list of int[2] of {row, col}.
         List<int[]> nextMoves = generateMoves();
 
-        // mySeed is maximizing; while oppSeed is minimizing
+        // mySide is maximizing; while oponentSide is minimizing
         int score;
         int bestRow = -1;
         int bestCol = -1;
@@ -45,15 +45,15 @@ public class AIPlayerMinimax extends AbstractPlayer {
             for (int[] move : nextMoves) {
                 // try this move for the current "player"
                 cells[move[0]][move[1]].content = player;
-                if (player == mySeed) {  // mySeed (computer) is maximizing player
-                    score = minimax(depth - 1, oppSeed, alpha, beta)[0];
+                if (player == mySide) {  // mySide (computer) is maximizing player
+                    score = minimax(depth - 1, oponentSide, alpha, beta)[0];
                     if (score > alpha) {
                         alpha = score;
                         bestRow = move[0];
                         bestCol = move[1];
                     }
-                } else {  // oppSeed is minimizing player
-                    score = minimax(depth - 1, mySeed, alpha, beta)[0];
+                } else {  // oponentSide is minimizing player
+                    score = minimax(depth - 1, mySide, alpha, beta)[0];
                     if (score < beta) {
                         beta = score;
                         bestRow = move[0];
@@ -65,7 +65,7 @@ public class AIPlayerMinimax extends AbstractPlayer {
                 // cut-off
                 if (alpha >= beta) break;
             }
-            return new int[]{(player == mySeed) ? alpha : beta, bestRow, bestCol};
+            return new int[]{(player == mySide) ? alpha : beta, bestRow, bestCol};
         }
     }
 
@@ -77,7 +77,7 @@ public class AIPlayerMinimax extends AbstractPlayer {
         List<int[]> nextMoves = new ArrayList<int[]>(); // allocate List
 
         // If gameover, i.e., no next move
-        if (hasWon(mySeed) || hasWon(oppSeed)) {
+        if (hasWon(mySide) || hasWon(oponentSide)) {
             return nextMoves;   // return empty list
         }
 
@@ -124,25 +124,25 @@ public class AIPlayerMinimax extends AbstractPlayer {
         int score = 0;
 
         // First cell
-        if (cells[row1][col1].content == mySeed) {
+        if (cells[row1][col1].content == mySide) {
             score = 1;
-        } else if (cells[row1][col1].content == oppSeed) {
+        } else if (cells[row1][col1].content == oponentSide) {
             score = -1;
         }
 
         // Second cell
-        if (cells[row2][col2].content == mySeed) {
-            if (score == 1) {   // cell1 is mySeed
+        if (cells[row2][col2].content == mySide) {
+            if (score == 1) {   // cell1 is mySide
                 score = 10;
-            } else if (score == -1) {  // cell1 is oppSeed
+            } else if (score == -1) {  // cell1 is oponentSide
                 return 0;
             } else {  // cell1 is empty
                 score = 1;
             }
-        } else if (cells[row2][col2].content == oppSeed) {
-            if (score == -1) { // cell1 is oppSeed
+        } else if (cells[row2][col2].content == oponentSide) {
+            if (score == -1) { // cell1 is oponentSide
                 score = -10;
-            } else if (score == 1) { // cell1 is mySeed
+            } else if (score == 1) { // cell1 is mySide
                 return 0;
             } else {  // cell1 is empty
                 score = -1;
@@ -150,18 +150,18 @@ public class AIPlayerMinimax extends AbstractPlayer {
         }
 
         // Third cell
-        if (cells[row3][col3].content == mySeed) {
-            if (score > 0) {  // cell1 and/or cell2 is mySeed
+        if (cells[row3][col3].content == mySide) {
+            if (score > 0) {  // cell1 and/or cell2 is mySide
                 score *= 10;
-            } else if (score < 0) {  // cell1 and/or cell2 is oppSeed
+            } else if (score < 0) {  // cell1 and/or cell2 is oponentSide
                 return 0;
             } else {  // cell1 and cell2 are empty
                 score = 1;
             }
-        } else if (cells[row3][col3].content == oppSeed) {
-            if (score < 0) {  // cell1 and/or cell2 is oppSeed
+        } else if (cells[row3][col3].content == oponentSide) {
+            if (score < 0) {  // cell1 and/or cell2 is oponentSide
                 score *= 10;
-            } else if (score > 1) {  // cell1 and/or cell2 is mySeed
+            } else if (score > 1) {  // cell1 and/or cell2 is mySide
                 return 0;
             } else {  // cell1 and cell2 are empty
                 score = -1;

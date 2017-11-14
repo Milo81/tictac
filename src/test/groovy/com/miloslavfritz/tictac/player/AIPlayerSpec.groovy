@@ -1,3 +1,5 @@
+package com.miloslavfritz.tictac.player
+
 import com.miloslavfritz.tictac.player.AIPlayerMinimax
 import com.miloslavfritz.tictac.Board
 import com.miloslavfritz.tictac.State
@@ -18,8 +20,7 @@ class AIPlayerSpec extends Specification {
         board.cells[1][1].content = State.NOUGHT
         board.cells[2][2].content = State.NOUGHT
 //        board.cells[2][0].content = State.CROSS
-        def ai = new AIPlayerMinimax(board)
-        ai.seed = State.CROSS
+        def ai = new AIPlayerMinimax(board, State.CROSS)
 
         expect:
         ai.move() == [2,0] as int[]
@@ -34,8 +35,7 @@ class AIPlayerSpec extends Specification {
 //        board.cells[1][1].content = State.NOUGHT
         board.cells[1][2].content = State.NOUGHT
         board.cells[2][0].content = State.CROSS
-        def ai = new AIPlayerMinimax(board)
-        ai.seed = State.NOUGHT
+        def ai = new AIPlayerMinimax(board, State.NOUGHT)
 
         expect:
         ai.move() == [1,1] as int[]
@@ -49,8 +49,7 @@ class AIPlayerSpec extends Specification {
 //        board.cells[2][2].content = State.CROSS
         board.cells[1][0].content = State.NOUGHT
         board.cells[2][0].content = State.NOUGHT
-        def ai = new AIPlayerMinimax(board)
-        ai.seed = State.CROSS
+        def ai = new AIPlayerMinimax(board, State.CROSS)
 
         expect:
         ai.move() == [2,2] as int[]
@@ -68,8 +67,7 @@ class AIPlayerSpec extends Specification {
 //        board.cells[2][0].content = State.CROSS
         board.cells[2][1].content = State.CROSS
         board.cells[2][2].content = State.NOUGHT
-        def ai = new AIPlayerMinimax(board)
-        ai.seed = State.CROSS
+        def ai = new AIPlayerMinimax(board, State.CROSS)
 
         expect:
         ai.move() == [2,0] as int[]
@@ -87,8 +85,7 @@ class AIPlayerSpec extends Specification {
         board.cells[2][0].content = State.CROSS
         board.cells[2][1].content = State.CROSS
         board.cells[2][2].content = State.CROSS
-        def ai = new AIPlayerMinimax(board)
-        ai.seed = State.CROSS
+        def ai = new AIPlayerMinimax(board, State.CROSS)
 
         expect:
         ai.move() == [-1,-1] as int[]

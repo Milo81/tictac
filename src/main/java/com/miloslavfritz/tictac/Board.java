@@ -1,7 +1,7 @@
 package com.miloslavfritz.tictac;
 
 /**
- * The Board class models the game-board.
+ * Represents the game board.
  */
 public class Board {  // save as Board.java
     public static final int ROWS = 3;

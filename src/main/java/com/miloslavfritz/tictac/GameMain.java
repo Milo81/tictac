@@ -4,19 +4,24 @@ import com.miloslavfritz.tictac.player.AIPlayerMinimax;
 import com.miloslavfritz.tictac.player.HumanPlayer;
 import com.miloslavfritz.tictac.player.Player;
 
-import java.lang.management.PlatformLoggingMXBean;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+
 /**
  * The main class for the Tic-Tac-Toe
- * It acts as the overall controller of the game.
+ * Keeps the current state of the game, implements main game loop.
  */
 public class GameMain {
-   private Board board;            // the game board
-   private GameState currentState; // the current state of the game (of enum GameState)
-   private State currentSide;     // the current side playing (X or O)
+   // game board
+   private Board board;
+   // current state of game (win, draw, playing)
+   private GameState currentState;
+   // the current side playing (X or O)
+   private State currentSide;
 
+   // player playing X side
    private Player playerX;
+   // player playing O side
    private Player playerO;
  
 
@@ -25,28 +30,21 @@ public class GameMain {
       board = new Board();  // allocate game-board
  
       // Initialize the game-board and current status
-      initGame();
-   }
-
-   /** Initialize the game-board contents and the current states */
-   private void initGame() {
       board.init();  // clear the board contents
-      currentSide = State.CROSS;       // CROSS plays first
+      currentSide = State.CROSS;       // CROSS plays goes first
       currentState = GameState.PLAYING; // ready to play
    }
 
    /**
     * Ask for the mode of game, AI vs AI, AI vs Human, Human vs Human.
     */
-   private GameMode askMode() {
-      System.out.println("Please choose game mode:");
-      System.out.println("1 - AI versus AI");
-      System.out.println("2 - AI versus Human");
-      System.out.println("3 - Human versus Human");
-
-      Scanner s = new Scanner(System.in);
-
+   private static GameMode askMode() {
       do {
+         Scanner s = new Scanner(System.in);
+         System.out.println("Please choose game mode:");
+         System.out.println("1 - AI versus AI");
+         System.out.println("2 - AI versus Human");
+         System.out.println("3 - Human versus Human");
          try {
             int i = s.nextInt();
             if (i >= 1 && i <= 3) {
@@ -61,42 +59,17 @@ public class GameMain {
             }
          } catch (InputMismatchException ignored) { }
 
-         System.err.print("Invalid input, please select 1, 2 or 3");
+         System.err.println("Invalid input, please select 1, 2 or 3 !");
       } while (true);
    }
 
    /**
-    * Ask the user for move.
-    *
-    * @return {row, col} of the entered move
+    * Updates the game state after the player playing side "theSide" has moved
+    * @param theSide side (O or X) to update game state for
     */
-   private int[] askMove(State player) {
-      Scanner s = new Scanner(System.in);
-
-      do {
-         if (player == State.CROSS) {
-            System.out.print("Player X: (row[1-3] column[1-3]): ");
-         } else {
-            System.out.print("Player O: (row[1-3] column[1-3]): ");
-         }
-         try {
-            int row = s.nextInt() - 1;
-            int col = s.nextInt() - 1;
-            if (row >= 0 && row < Board.ROWS && col >= 0 && col < Board.COLS
-                    && board.cells[row][col].content == State.EMPTY) {
-               return new int[] {row, col};
-            }
-         } catch (InputMismatchException ignored) { }
-
-         System.err.println("Invalid move, please try again !");
-      } while(true);
-
-   }
-
-   /** Update the currentState after the player with "theSeed" has moved */
-   private void updateGame(State theSeed) {
-      if (board.hasWon(theSeed)) {  // check for win
-         currentState = (theSeed == State.CROSS) ? GameState.CROSS_WON : GameState.NOUGHT_WON;
+   private void updateGame(State theSide) {
+      if (board.hasWon(theSide)) {  // check for win
+         currentState = (theSide == State.CROSS) ? GameState.CROSS_WON : GameState.NOUGHT_WON;
       } else if (board.isDraw()) {  // check for draw
          currentState = GameState.DRAW;
       }
@@ -116,20 +89,24 @@ public class GameMain {
          }
 
          // update the board
-         board.cells[move[0]][move[1]].content = currentSide;
-         board.currentRow = move[0];
-         board.currentCol = move[1];
+         int row = move[0];
+         int col = move[1];
+         board.cells[row][col].content = currentSide;
+         board.currentRow = row;
+         board.currentCol = col;
          System.out.println(board);
+         System.out.println();
 
          // check if somebody already won
          updateGame(currentSide);
+
          // Print message if game-over
          if (currentState == GameState.CROSS_WON) {
-            System.out.println("'X' won! Bye!");
+            System.out.println("'X' player won the game");
          } else if (currentState == GameState.NOUGHT_WON) {
-            System.out.println("'O' won! Bye!");
+            System.out.println("'O' player won the game");
          } else if (currentState == GameState.DRAW) {
-            System.out.println("It's Draw! Bye!");
+            System.out.println("Draw.");
          }
          // change players
          currentSide = (currentSide == State.CROSS) ? State.NOUGHT : State.CROSS;
@@ -150,29 +127,23 @@ public class GameMain {
       GameMain gm = new GameMain();
 
       // ask for game mode
-      GameMode mode = gm.askMode();
+      GameMode mode = askMode();
       System.out.println("Game Starting ...");
       System.out.println(gm.board);
 
       // create players
       switch (mode) {
          case AI_VS_AI:
-            gm.playerX = new AIPlayerMinimax(gm.board);
-            gm.playerX.setSeed(State.CROSS);
-            gm.playerO = new AIPlayerMinimax(gm.board);
-            gm.playerO.setSeed(State.NOUGHT);
+            gm.playerX = new AIPlayerMinimax(gm.board, State.CROSS);
+            gm.playerO = new AIPlayerMinimax(gm.board, State.NOUGHT);
             break;
          case AI_VS_HUMAN:
-            gm.playerX = new HumanPlayer(gm.board);
-            gm.playerX.setSeed(State.CROSS);
-            gm.playerO = new AIPlayerMinimax(gm.board);
-            gm.playerO.setSeed(State.NOUGHT);
+            gm.playerX = new HumanPlayer(gm.board, State.CROSS);
+            gm.playerO = new AIPlayerMinimax(gm.board, State.NOUGHT);
             break;
          case HUMAN_VS_HUMAN:
-            gm.playerX = new HumanPlayer(gm.board);
-            gm.playerX.setSeed(State.CROSS);
-            gm.playerO = new HumanPlayer(gm.board);
-            gm.playerO.setSeed(State.NOUGHT);
+            gm.playerX = new HumanPlayer(gm.board, State.CROSS);
+            gm.playerO = new HumanPlayer(gm.board, State.NOUGHT);
             break;
          default:
             throw new IllegalStateException("Illegal game mode");
@@ -180,6 +151,5 @@ public class GameMain {
 
       // and execute main loop
       gm.maingGameLoop(mode == GameMode.AI_VS_AI);
-
    }
 }
