@@ -25,7 +25,7 @@ public class GameController {
     private Player playerO;
 
     /**
-     * Creates the gameCOntrollert
+     * Creates the gameController
      *
      * @param outputStream printStream to write output to
      */
